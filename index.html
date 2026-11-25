@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f3f5f8">
+    <meta name="description" content="괄호와 연산 우선순위를 지원하는 키보드 친화적인 공학용 계산기">
+    <title>공학용 계산기 · 황성호</title>
+    <style>
+@charset "UTF-8";
+
+:root {
+    color-scheme: light;
+    --page: #f3f5f8;
+    --ink: #182334;
+    --muted: #5f6a79;
+    --line: #dce1e8;
+    --accent: #d4ed6a;
+    --panel: #161e2c;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); }
+button, input { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+button:disabled { cursor: default; opacity: .45; }
+button:focus-visible, a:focus-visible { outline: 3px solid #4069bd; outline-offset: 5px; }
+.wrap { width: min(1080px, calc(100% - 80px)); margin-inline: auto; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding-block: 30px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; text-decoration: none; color: var(--ink); font-size: 1.55rem; font-weight: 900; letter-spacing: -.07em; }
+.brand-mark { display: grid; place-items: center; width: 33px; height: 33px; margin-right: 11px; border-radius: 9px; background: var(--ink); color: var(--accent); font-size: 1.5rem; font-weight: 500; }
+.brand-dot { color: #729200; }
+.course-label { font-size: .875rem; color: var(--muted); }
+.workspace { display: grid; grid-template-columns: 1fr 1.22fr; align-items: center; gap: 75px; padding-block: 58px 44px; }
+.eyebrow { margin: 0 0 23px; font-size: .75rem; font-weight: 700; letter-spacing: .13em; color: var(--muted); }
+h1 { margin: 0; font-size: clamp(2.8rem, 5.4vw, 4.4rem); line-height: 1.23; letter-spacing: -.07em; font-weight: 800; }
+h1 span { position: relative; z-index: 0; }
+h1 span::after { content: ""; position: absolute; z-index: -1; height: .24em; bottom: .08em; left: 0; right: 0; background: var(--accent); }
+.intro-text { margin: 23px 0; font-size: 1rem; line-height: 1.85; color: var(--muted); }
+.feature-tags { display: flex; gap: 7px; flex-wrap: wrap; }
+.feature-tags span { padding: 6px 10px; border: 1px solid #d4dbe4; border-radius: 6px; font-size: .875rem; color: #4b5665; }
+.keyboard-guide { margin-top: 35px; padding-top: 24px; border-top: 1px solid var(--line); }
+.keyboard-guide h2 { margin: 0 0 15px; font-size: .95rem; font-weight: 700; }
+.keyboard-guide h2 span { margin-right: 6px; }
+.keyboard-guide p { margin: 10px 0; color: var(--muted); font-size: .875rem; line-height: 1.7; }
+kbd { display: inline-block; padding: 2px 6px; margin-right: 5px; border: 1px solid #d4dbe4; border-bottom-width: 2px; border-radius: 5px; background: #fff; font-size: .75rem; }
+kbd:not(:first-child) { margin-left: 12px; }
+code { font-family: "Consolas", "Courier New", monospace; }
+.example-button { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 23px; padding: 0; border: 0; background: transparent; font-size: .875rem; font-weight: 600; color: #3c566f; text-align: left; }
+.example-button code { padding-bottom: 3px; border-bottom: 1px dashed #899caf; }
+.calculator { min-width: 0; padding: 25px; background: var(--panel); color: #f9fafb; border: 1px solid #283141; border-radius: 24px; box-shadow: 0 22px 45px -20px #18233455; }
+.calculator-top { display: flex; justify-content: space-between; align-items: center; color: #b7c0ce; font-size: .75rem; font-weight: 600; letter-spacing: .12em; }
+.mode-label { padding: 5px 8px; border: 1px solid #3c4656; border-radius: 5px; font-size: .65rem; letter-spacing: .08em; }
+.display { padding-top: 30px; }
+.display label { display: block; margin-bottom: 8px; font-size: .875rem; color: #a8b3c4; }
+#expression { width: 100%; min-width: 0; padding: 7px 0; border: 0; border-bottom: 1px solid #3c4656; border-radius: 0; outline-offset: 4px; background: transparent; color: #d9e2ef; font-family: "Consolas", monospace; font-size: 1.5rem; line-height: 1.5; text-align: right; }
+#expression::placeholder { color: #707c90; opacity: 1; }
+#expression:focus { border-bottom-color: var(--accent); outline: none; }
+.result-line { display: flex; align-items: center; gap: 15px; min-height: 78px; padding-top: 8px; }
+.equals-label { color: #8390a4; font-size: 1.5rem; }
+#result { flex: 1; min-width: 0; overflow-wrap: anywhere; color: var(--accent); font-family: "Consolas", monospace; font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 500; text-align: right; }
+.error-message { min-height: 20px; margin: 0 0 13px; font-size: .875rem; line-height: 1.5; color: #ffb7ad; }
+.keypad { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.key { display: grid; place-items: center; min-height: 59px; padding: 8px 2px; border: 1px solid #364151; border-radius: 11px; background: #273142; color: #f3f5f8; font-size: 1.4rem; font-weight: 500; transition: background .15s, transform .15s; }
+.key:hover { background: #3c4960; transform: translateY(-1px); }
+.key:active { transform: translateY(1px); }
+.key-function { background: #202a3a; color: #bcc9dc; font-size: 1.2rem; }
+.key-operator { background: #34404b; color: #e3efb8; font-size: 1.6rem; }
+.key-clear { background: #46313a; border-color: #5a404a; color: #ffb4ae; font-size: 1rem; font-weight: 600; }
+.key-clear:hover { background: #63424e; }
+.key-equals { background: var(--accent); border-color: var(--accent); color: #233011; font-size: 1.9rem; }
+.key-equals:hover { background: #e5f799; }
+.key:focus-visible { outline-color: #e9f6b7; outline-offset: 2px; }
+.calculator-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: 18px; font-size: .75rem; color: #a6b1c1; }
+.history-section { padding: 25px 0 35px; border-top: 1px solid var(--line); }
+.history-heading { display: flex; align-items: center; justify-content: space-between; }
+.history-heading h2 { margin: 0; font-size: 1rem; font-weight: 700; }
+.history-heading h2 span { margin-left: 10px; font-size: .7rem; letter-spacing: .12em; font-weight: 500; color: var(--muted); }
+.history-heading button { padding: 6px 0 6px 10px; border: 0; background: transparent; font-size: .875rem; color: var(--muted); }
+.history-empty { margin: 20px 0 0; font-size: .875rem; color: var(--muted); line-height: 1.7; }
+.history-list { display: grid; gap: 8px; margin: 17px 0 0; padding: 0; list-style: none; }
+.history-list:empty { display: none; }
+.history-item { display: flex; justify-content: space-between; align-items: center; gap: 15px; width: 100%; padding: 13px 17px; border: 1px solid var(--line); border-radius: 10px; background: #fff; text-align: left; color: #48566a; font: 1rem "Consolas", monospace; }
+.history-item span { min-width: 0; overflow-wrap: anywhere; }
+.history-item strong { flex-shrink: 0; max-width: 50%; overflow-wrap: anywhere; color: #25340b; font-weight: 600; text-align: right; }
+.history-item:hover { border-color: #9bae62; }
+.footer { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; padding-block: 23px; border-top: 1px solid var(--line); font-size: .75rem; color: var(--muted); }
+.footer-divider { padding-inline: 8px; color: #aeb6c3; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+[hidden] { display: none !important; }
+.noscript { padding: 20px; text-align: center; color: #a12828; }
+
+@media (max-width: 850px) {
+    .workspace { gap: 35px; grid-template-columns: .9fr 1.2fr; }
+    .wrap { width: calc(100% - 48px); }
+    .calculator { padding: 20px; }
+    .key { min-height: 55px; }
+}
+
+@media (max-width: 660px) {
+    .wrap { width: calc(100% - 32px); }
+    .topbar { padding-block: 20px; }
+    .workspace { grid-template-columns: 1fr; gap: 26px; padding-block: 32px; }
+    .eyebrow { margin-bottom: 14px; font-size: .65rem; }
+    h1 { font-size: 2.5rem; }
+    h1 br { display: none; }
+    h1 span { margin-left: 8px; }
+    .intro-text { margin: 15px 0; font-size: .95rem; }
+    .intro-text br { display: none; }
+    .keyboard-guide { margin-top: 20px; padding-top: 18px; }
+    .keyboard-guide p { display: inline-block; margin: 0 8px 7px 0; }
+    .keyboard-guide h2 { margin-bottom: 10px; }
+    .example-button { margin-top: 12px; }
+    .calculator { border-radius: 20px; padding: 20px; }
+    .display { padding-top: 20px; }
+    .key { min-height: 55px; }
+    .calculator-bottom { font-size: .75rem; }
+    .history-section { padding-top: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+}
+
+    </style>
+</head>
+<body>
+    <header class="topbar wrap">
+        <a class="brand" href="#page-title" aria-label="계산기 처음으로"><span class="brand-mark" aria-hidden="true">=</span> CALC<span class="brand-dot">.</span></a>
+        <span class="course-label">추가 실습 2-A</span>
+    </header>
+
+    <main class="workspace wrap">
+        <section class="intro" aria-labelledby="page-title">
+            <p class="eyebrow">A LITTLE SPACE FOR BIG IDEAS</p>
+            <h1 id="page-title">공학용<br><span>계산기.</span></h1>
+            <p class="intro-text">복잡한 식도 차근차근.<br>괄호부터 제곱근까지 계산해 보세요.</p>
+            <div class="feature-tags" aria-label="지원 연산"><span>사칙연산</span><span>괄호</span><span>제곱 · 제곱근</span></div>
+
+            <aside class="keyboard-guide" aria-label="키보드 사용 안내">
+                <h2><span aria-hidden="true">⌨</span> 키보드로 더 빠르게</h2>
+                <p><kbd>Enter</kbd> 계산 <kbd>Esc</kbd> 초기화</p>
+                <p><kbd>Backspace</kbd> 한 글자 지우기</p>
+                <p><code>^</code> 거듭제곱 <code>sqrt(9)</code> 제곱근</p>
+            </aside>
+
+            <button class="example-button" id="example-button" type="button">예제 불러오기 <code>2*(3+4)^2</code></button>
+        </section>
+
+        <section class="calculator" aria-label="공학용 계산기 입력 패널">
+            <div class="calculator-top"><span>SCIENTIFIC</span><span class="mode-label">STANDARD</span></div>
+            <div class="display">
+                <label for="expression">계산식</label>
+                <input id="expression" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="500" placeholder="0" aria-describedby="expression-help error-message">
+                <p class="sr-only" id="expression-help">숫자, 더하기, 빼기, 곱하기, 나누기, 괄호, 거듭제곱과 sqrt를 입력한 뒤 Enter를 누르세요.</p>
+                <div class="result-line"><span class="equals-label" aria-hidden="true">=</span><output id="result" for="expression" aria-live="polite" aria-atomic="true">0</output></div>
+                <p id="error-message" class="error-message" role="alert"></p>
+            </div>
+            <div class="keypad" id="keypad" aria-label="계산기 버튼">
+                <button type="button" class="key key-clear" data-action="clear" aria-label="모두 지우기">AC</button>
+                <button type="button" class="key key-function" data-value="(" aria-label="여는 괄호">(</button>
+                <button type="button" class="key key-function" data-value=")" aria-label="닫는 괄호">)</button>
+                <button type="button" class="key key-function" data-action="backspace" aria-label="한 글자 지우기">⌫</button>
+                <button type="button" class="key key-operator" data-value="/" aria-label="나누기">÷</button>
+
+                <button type="button" class="key" data-value="7">7</button>
+                <button type="button" class="key" data-value="8">8</button>
+                <button type="button" class="key" data-value="9">9</button>
+                <button type="button" class="key key-function" data-action="square" aria-label="제곱">x²</button>
+                <button type="button" class="key key-operator" data-value="*" aria-label="곱하기">×</button>
+
+                <button type="button" class="key" data-value="4">4</button>
+                <button type="button" class="key" data-value="5">5</button>
+                <button type="button" class="key" data-value="6">6</button>
+                <button type="button" class="key key-function" data-value="sqrt(" aria-label="제곱근">√</button>
+                <button type="button" class="key key-operator" data-value="-" aria-label="빼기">−</button>
+
+                <button type="button" class="key" data-value="1">1</button>
+                <button type="button" class="key" data-value="2">2</button>
+                <button type="button" class="key" data-value="3">3</button>
+                <button type="button" class="key key-function" data-value="^" aria-label="거듭제곱">xʸ</button>
+                <button type="button" class="key key-operator" data-value="+" aria-label="더하기">+</button>
+
+                <button type="button" class="key key-function" data-action="negate" aria-label="부호 바꾸기">±</button>
+                <button type="button" class="key" data-value="0">0</button>
+                <button type="button" class="key" data-value=".">.</button>
+                <button type="button" class="key key-function" data-value="%" aria-label="백분율">%</button>
+                <button type="button" class="key key-equals" data-action="calculate" aria-label="계산하기">=</button>
+            </div>
+            <div class="calculator-bottom"><span>연산 우선순위 자동 적용</span><span><code>10%</code> = 0.1</span></div>
+        </section>
+    </main>
+
+    <section class="history-section wrap" aria-labelledby="history-heading">
+        <div class="history-heading"><h2 id="history-heading">최근 계산 <span>HISTORY</span></h2><button id="clear-history" type="button" disabled>기록 지우기</button></div>
+        <p id="history-empty" class="history-empty">첫 계산을 시작해 보세요. 최근 계산 5개가 여기에 표시됩니다.</p>
+        <ol id="history-list" class="history-list"></ol>
+    </section>
+
+    <footer class="footer wrap"><span>황성호 <span class="footer-divider">/</span> 260199</span><span>HTML · CSS · JavaScript</span></footer>
+    <noscript><p class="noscript">계산 기능을 사용하려면 브라우저의 JavaScript를 활성화해 주세요.</p></noscript>
+    <script>
+"use strict";
+
+// 수식 토큰 분리
+function tokenize(expression)
+{
+    const source = String(expression).replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-");
+    if (source.length > 500)
+    {
+        throw new Error("계산식은 500자 이내로 입력해 주세요.");
+    }
+
+    const tokens = [];
+    let index = 0;
+    while (index < source.length)
+    {
+        const ch = source[index];
+        if (/\s/.test(ch))
+        {
+            index += 1;
+            continue;
+        }
+
+        const number = source.slice(index).match(/^(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?/);
+        if (number)
+        {
+            const value = Number(number[0]);
+            if (!Number.isFinite(value))
+            {
+                throw new Error("숫자가 너무 큽니다.");
+            }
+            tokens.push({ type: "number", value });
+            index += number[0].length;
+            continue;
+        }
+
+        if (source.slice(index, index + 4).toLowerCase() === "sqrt")
+        {
+            tokens.push({ type: "sqrt" });
+            index += 4;
+            continue;
+        }
+        if (ch === "√")
+        {
+            tokens.push({ type: "sqrt" });
+            index += 1;
+            continue;
+        }
+        if ("+-*/^()%".includes(ch))
+        {
+            tokens.push({ type: ch });
+            index += 1;
+            continue;
+        }
+        throw new Error("숫자, 연산 기호와 sqrt만 입력해 주세요.");
+    }
+
+    tokens.push({ type: "end" });
+    return tokens;
+}
+
+// 재귀 하강 방식 수식 해석
+function calculateExpression(expression)
+{
+    const tokens = tokenize(expression);
+    let index = 0;
+    let depth = 0;
+
+    function match(type)
+    {
+        if (tokens[index].type !== type)
+        {
+            return false;
+        }
+        index += 1;
+        return true;
+    }
+
+    function finite(value)
+    {
+        if (!Number.isFinite(value))
+        {
+            throw new Error("실수 범위에서 계산할 수 없거나 결과가 너무 큽니다.");
+        }
+        return value;
+    }
+
+    function parseExpression()
+    {
+        depth += 1;
+        if (depth > 64)
+        {
+            throw new Error("괄호와 연산을 조금 줄여 주세요.");
+        }
+        let value = parseTerm();
+        while (true)
+        {
+            if (match("+"))
+            {
+                value = finite(value + parseTerm());
+            }
+            else if (match("-"))
+            {
+                value = finite(value - parseTerm());
+            }
+            else
+            {
+                break;
+            }
+        }
+        depth -= 1;
+        return value;
+    }
+
+    function parseTerm()
+    {
+        let value = parseUnary();
+        while (true)
+        {
+            if (match("*"))
+            {
+                value = finite(value * parseUnary());
+            }
+            else if (match("/"))
+            {
+                const divisor = parseUnary();
+                if (divisor === 0)
+                {
+                    throw new Error("0으로 나눌 수 없습니다.");
+                }
+                value = finite(value / divisor);
+            }
+            else
+            {
+                break;
+            }
+        }
+        return value;
+    }
+
+    function parseUnary()
+    {
+        if (match("+"))
+        {
+            return parseUnary();
+        }
+        if (match("-"))
+        {
+            return -parseUnary();
+        }
+        return parsePower();
+    }
+
+    // 거듭제곱은 오른쪽부터 계산
+    function parsePower()
+    {
+        let value = parsePostfix();
+        if (match("^"))
+        {
+            value = finite(Math.pow(value, parseUnary()));
+        }
+        return value;
+    }
+
+    function parsePostfix()
+    {
+        let value = parsePrimary();
+        while (match("%"))
+        {
+            value /= 100;
+        }
+        return value;
+    }
+
+    function parsePrimary()
+    {
+        const token = tokens[index];
+        if (match("number"))
+        {
+            return token.value;
+        }
+        if (match("("))
+        {
+            const value = parseExpression();
+            if (!match(")"))
+            {
+                throw new Error("닫는 괄호가 필요합니다.");
+            }
+            return value;
+        }
+        if (match("sqrt"))
+        {
+            const value = parsePrimary();
+            if (value < 0)
+            {
+                throw new Error("음수의 제곱근은 실수로 계산할 수 없습니다.");
+            }
+            return Math.sqrt(value);
+        }
+        throw new Error("숫자 또는 올바른 괄호 안의 수식을 입력해 주세요.");
+    }
+
+    if (tokens[0].type === "end")
+    {
+        throw new Error("계산식을 입력해 주세요.");
+    }
+
+    const result = finite(parseExpression());
+    if (tokens[index].type !== "end")
+    {
+        throw new Error("괄호와 연산 기호의 위치를 확인해 주세요.");
+    }
+    return Object.is(result, -0) ? 0 : result;
+}
+
+// 부동소수점 표시 정리
+function formatResult(value)
+{
+    return String(Number(value.toPrecision(12)));
+}
+
+// Node.js 검증용 내보내기
+if (typeof module !== "undefined" && module.exports)
+{
+    module.exports = { tokenize, calculateExpression, formatResult };
+}
+
+// 계산기 화면 이벤트 연결
+function initializeCalculator()
+{
+    const input = document.getElementById("expression");
+    const output = document.getElementById("result");
+    const error = document.getElementById("error-message");
+    const historyList = document.getElementById("history-list");
+    const historyEmpty = document.getElementById("history-empty");
+    const clearHistoryButton = document.getElementById("clear-history");
+    let justCalculated = false;
+    let lastResult = "0";
+    let history = [];
+
+    function focusInput(position)
+    {
+        input.focus({ preventScroll: true });
+        const cursor = position === undefined ? input.value.length : position;
+        input.setSelectionRange(cursor, cursor);
+    }
+
+    function clearError()
+    {
+        error.textContent = "";
+        input.removeAttribute("aria-invalid");
+    }
+
+    function markEditing()
+    {
+        justCalculated = false;
+        clearError();
+        output.textContent = input.value.trim() ? "…" : "0";
+    }
+
+    function insertText(text)
+    {
+        let value = input.value;
+        let start = input.selectionStart === null ? value.length : input.selectionStart;
+        let end = input.selectionEnd === null ? value.length : input.selectionEnd;
+        if (justCalculated)
+        {
+            value = /^(?:[\d.(sS√]|sqrt)/.test(text) ? "" : lastResult;
+            start = value.length;
+            end = start;
+        }
+        const nextValue = value.slice(0, start) + text + value.slice(end);
+        if (nextValue.length > input.maxLength)
+        {
+            error.textContent = "계산식은 500자 이내로 입력해 주세요.";
+            return;
+        }
+        input.value = nextValue;
+        markEditing();
+        focusInput(start + text.length);
+    }
+
+    function clearInput()
+    {
+        input.value = "";
+        justCalculated = false;
+        lastResult = "0";
+        output.textContent = "0";
+        clearError();
+        focusInput();
+    }
+
+    function backspace()
+    {
+        const start = input.selectionStart === null ? input.value.length : input.selectionStart;
+        const end = input.selectionEnd === null ? input.value.length : input.selectionEnd;
+        const from = start === end ? Math.max(0, start - 1) : start;
+        input.value = input.value.slice(0, from) + input.value.slice(end);
+        markEditing();
+        focusInput(from);
+    }
+
+    // 기록은 수식 텍스트로 안전하게 표시
+    function renderHistory()
+    {
+        historyList.replaceChildren();
+        historyEmpty.hidden = history.length > 0;
+        clearHistoryButton.disabled = history.length === 0;
+        history.forEach(function (item)
+        {
+            const li = document.createElement("li");
+            const button = document.createElement("button");
+            const expression = document.createElement("span");
+            const result = document.createElement("strong");
+            button.type = "button";
+            button.className = "history-item";
+            button.setAttribute("aria-label", item.expression + " = " + item.result + " 다시 불러오기");
+            expression.textContent = item.expression;
+            result.textContent = "= " + item.result;
+            button.append(expression, result);
+            button.addEventListener("click", function ()
+            {
+                input.value = item.expression;
+                output.textContent = item.result;
+                lastResult = item.result;
+                justCalculated = true;
+                clearError();
+                focusInput();
+            });
+            li.append(button);
+            historyList.append(li);
+        });
+    }
+
+    function calculate()
+    {
+        try
+        {
+            const expression = input.value.trim();
+            const result = formatResult(calculateExpression(expression));
+            output.textContent = result;
+            lastResult = result;
+            justCalculated = true;
+            clearError();
+            if (!history[0] || history[0].expression !== expression || history[0].result !== result)
+            {
+                history.unshift({ expression, result });
+                history = history.slice(0, 5);
+                renderHistory();
+            }
+        }
+        catch (err)
+        {
+            output.textContent = "—";
+            error.textContent = err.message;
+            input.setAttribute("aria-invalid", "true");
+            justCalculated = false;
+        }
+    }
+
+    input.addEventListener("input", markEditing);
+    document.getElementById("keypad").addEventListener("click", function (event)
+    {
+        const button = event.target.closest("button");
+        if (!button)
+        {
+            return;
+        }
+        if (button.dataset.value !== undefined)
+        {
+            insertText(button.dataset.value);
+            return;
+        }
+        switch (button.dataset.action)
+        {
+            case "clear":
+                clearInput();
+                break;
+            case "backspace":
+                backspace();
+                break;
+            case "square":
+            case "negate":
+            {
+                const value = justCalculated ? lastResult : input.value;
+                const nextValue = value
+                    ? (button.dataset.action === "square" ? "(" + value + ")^2" : "-(" + value + ")")
+                    : (button.dataset.action === "square" ? "" : "-");
+                if (nextValue.length > input.maxLength)
+                {
+                    error.textContent = "계산식은 500자 이내로 입력해 주세요.";
+                    return;
+                }
+                input.value = nextValue;
+                markEditing();
+                focusInput();
+                break;
+            }
+            case "calculate":
+                calculate();
+                break;
+        }
+    });
+
+    // 입력 위치와 관계없이 키보드 계산 지원
+    document.addEventListener("keydown", function (event)
+    {
+        if (event.isComposing || event.ctrlKey || event.metaKey || event.altKey)
+        {
+            return;
+        }
+        if (event.key === "Escape")
+        {
+            event.preventDefault();
+            clearInput();
+            return;
+        }
+        if (event.key === "=" || (event.key === "Enter" && (event.target === input || event.target === document.body)))
+        {
+            event.preventDefault();
+            calculate();
+            return;
+        }
+        if (event.target === input)
+        {
+            if (justCalculated && /^[0-9.+\-*/^()%sS√]$/.test(event.key))
+            {
+                event.preventDefault();
+                insertText(event.key);
+            }
+            return;
+        }
+        if (/^[0-9.+\-*/^()%sS√]$/.test(event.key))
+        {
+            event.preventDefault();
+            insertText(event.key);
+        }
+        else if (event.key === "Backspace")
+        {
+            event.preventDefault();
+            backspace();
+        }
+    });
+
+    document.getElementById("example-button").addEventListener("click", function ()
+    {
+        input.value = "2*(3+4)^2";
+        markEditing();
+        focusInput();
+    });
+
+    clearHistoryButton.addEventListener("click", function ()
+    {
+        history = [];
+        renderHistory();
+    });
+}
+
+if (typeof document !== "undefined")
+{
+    initializeCalculator();
+}
+
+    </script>
+</body>
+</html>
