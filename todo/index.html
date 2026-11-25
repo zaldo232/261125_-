@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="과제와 할 일을 브라우저에 저장하는 간단한 To-Do 앱">
+    <title>오늘의 할 일 | 황성호</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <header class="header wrap"><a class="brand" href="./index.html"><span aria-hidden="true">✓</span> ONE THING.</a><nav aria-label="실습 메뉴"><a href="../profile/index.html">자기소개</a><a href="../calculator/index.html">계산기</a></nav></header>
+    <main class="wrap">
+        <section class="intro" aria-labelledby="page-title"><div><p class="eyebrow">MAKE ROOM FOR WHAT MATTERS</p><h1 id="page-title">오늘의 작은 한 걸음.</h1><p class="subtitle">할 일을 기록하고, 완료한 일을 하나씩 체크하세요.</p></div><p class="date" id="today-date"></p></section>
+        <section class="stats" aria-label="할 일 현황"><div><span>전체 할 일</span><strong id="total-count">0</strong></div><div class="stat-active"><span>남은 할 일</span><strong id="active-count">0</strong></div><div><span>완료한 일</span><strong id="completed-count">0</strong></div></section>
+
+        <section class="task-panel" aria-labelledby="tasks-heading">
+            <div class="panel-heading"><h2 id="tasks-heading">나의 할 일</h2><span class="local-label">이 브라우저에 자동 저장</span></div>
+            <form id="todo-form" class="todo-form"><label class="sr-only" for="todo-input">새 할 일</label><input id="todo-input" type="text" maxlength="150" placeholder="어떤 일을 해볼까요?" autocomplete="off" aria-describedby="input-error"><button type="submit">추가</button></form>
+            <p id="input-error" class="input-error" role="alert"></p>
+            <div class="list-toolbar"><div class="filters" role="group" aria-label="할 일 필터"><button type="button" data-filter="all" aria-pressed="true">전체</button><button type="button" data-filter="active" aria-pressed="false">진행중</button><button type="button" data-filter="completed" aria-pressed="false">완료</button></div><p id="remaining-count" aria-live="polite">남은 할 일 0개</p></div>
+            <ul id="todo-list" class="todo-list" aria-label="할 일 목록"></ul>
+            <div id="empty-state" class="empty-state"><span aria-hidden="true">☑</span><h3 id="empty-heading">첫 번째 할 일을 적어보세요.</h3><p id="empty-description">작은 일부터 시작해도 괜찮아요.</p></div>
+            <div class="progress-area"><div><label for="completion-progress">오늘의 완료율</label><span id="progress-label">0%</span></div><progress id="completion-progress" value="0" max="100">0%</progress></div>
+            <p id="storage-status" class="storage-status" role="status"></p>
+        </section>
+        <p class="keyboard-tip"><kbd>Enter</kbd> 로 빠르게 추가할 수 있어요. 저장한 목록과 완료 상태는 새로고침해도 유지됩니다.</p>
+    </main>
+    <footer class="footer wrap"><span>황성호 · 기본 실습 ② To-Do 앱</span><span>작은 완료가 쌓이는 하루.</span></footer>
+    <noscript><p>할 일 앱을 사용하려면 JavaScript를 활성화해 주세요.</p></noscript>
+</body>
+</html>
