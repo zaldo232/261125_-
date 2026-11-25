@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f3f5f8">
+    <meta name="description" content="괄호와 연산 우선순위를 지원하는 키보드 친화적인 공학용 계산기">
+    <title>공학용 계산기 · 황성호</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <header class="topbar wrap">
+        <a class="brand" href="./index.html" aria-label="계산기 처음으로"><span class="brand-mark" aria-hidden="true">=</span> CALC<span class="brand-dot">.</span></a>
+        <span class="course-label">추가 실습 2-A</span>
+    </header>
+
+    <main class="workspace wrap">
+        <section class="intro" aria-labelledby="page-title">
+            <p class="eyebrow">A LITTLE SPACE FOR BIG IDEAS</p>
+            <h1 id="page-title">공학용<br><span>계산기.</span></h1>
+            <p class="intro-text">복잡한 식도 차근차근.<br>괄호부터 제곱근까지 계산해 보세요.</p>
+            <div class="feature-tags" aria-label="지원 연산"><span>사칙연산</span><span>괄호</span><span>제곱 · 제곱근</span></div>
+
+            <aside class="keyboard-guide" aria-label="키보드 사용 안내">
+                <h2><span aria-hidden="true">⌨</span> 키보드로 더 빠르게</h2>
+                <p><kbd>Enter</kbd> 계산 <kbd>Esc</kbd> 초기화</p>
+                <p><kbd>Backspace</kbd> 한 글자 지우기</p>
+                <p><code>^</code> 거듭제곱 <code>sqrt(9)</code> 제곱근</p>
+            </aside>
+
+            <button class="example-button" id="example-button" type="button">예제 불러오기 <code>2*(3+4)^2</code></button>
+        </section>
+
+        <section class="calculator" aria-label="공학용 계산기 입력 패널">
+            <div class="calculator-top"><span>SCIENTIFIC</span><span class="mode-label">STANDARD</span></div>
+            <div class="display">
+                <label for="expression">계산식</label>
+                <input id="expression" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="500" placeholder="0" aria-describedby="expression-help error-message">
+                <p class="sr-only" id="expression-help">숫자, 더하기, 빼기, 곱하기, 나누기, 괄호, 거듭제곱과 sqrt를 입력한 뒤 Enter를 누르세요.</p>
+                <div class="result-line"><span class="equals-label" aria-hidden="true">=</span><output id="result" for="expression" aria-live="polite" aria-atomic="true">0</output></div>
+                <p id="error-message" class="error-message" role="alert"></p>
+            </div>
+            <div class="keypad" id="keypad" aria-label="계산기 버튼">
+                <button type="button" class="key key-clear" data-action="clear" aria-label="모두 지우기">AC</button>
+                <button type="button" class="key key-function" data-value="(" aria-label="여는 괄호">(</button>
+                <button type="button" class="key key-function" data-value=")" aria-label="닫는 괄호">)</button>
+                <button type="button" class="key key-function" data-action="backspace" aria-label="한 글자 지우기">⌫</button>
+                <button type="button" class="key key-operator" data-value="/" aria-label="나누기">÷</button>
+
+                <button type="button" class="key" data-value="7">7</button>
+                <button type="button" class="key" data-value="8">8</button>
+                <button type="button" class="key" data-value="9">9</button>
+                <button type="button" class="key key-function" data-action="square" aria-label="제곱">x²</button>
+                <button type="button" class="key key-operator" data-value="*" aria-label="곱하기">×</button>
+
+                <button type="button" class="key" data-value="4">4</button>
+                <button type="button" class="key" data-value="5">5</button>
+                <button type="button" class="key" data-value="6">6</button>
+                <button type="button" class="key key-function" data-value="sqrt(" aria-label="제곱근">√</button>
+                <button type="button" class="key key-operator" data-value="-" aria-label="빼기">−</button>
+
+                <button type="button" class="key" data-value="1">1</button>
+                <button type="button" class="key" data-value="2">2</button>
+                <button type="button" class="key" data-value="3">3</button>
+                <button type="button" class="key key-function" data-value="^" aria-label="거듭제곱">xʸ</button>
+                <button type="button" class="key key-operator" data-value="+" aria-label="더하기">+</button>
+
+                <button type="button" class="key key-function" data-action="negate" aria-label="부호 바꾸기">±</button>
+                <button type="button" class="key" data-value="0">0</button>
+                <button type="button" class="key" data-value=".">.</button>
+                <button type="button" class="key key-function" data-value="%" aria-label="백분율">%</button>
+                <button type="button" class="key key-equals" data-action="calculate" aria-label="계산하기">=</button>
+            </div>
+            <div class="calculator-bottom"><span>연산 우선순위 자동 적용</span><span><code>10%</code> = 0.1</span></div>
+        </section>
+    </main>
+
+    <section class="history-section wrap" aria-labelledby="history-heading">
+        <div class="history-heading"><h2 id="history-heading">최근 계산 <span>HISTORY</span></h2><button id="clear-history" type="button" disabled>기록 지우기</button></div>
+        <p id="history-empty" class="history-empty">첫 계산을 시작해 보세요. 최근 계산 5개가 여기에 표시됩니다.</p>
+        <ol id="history-list" class="history-list"></ol>
+    </section>
+
+    <footer class="footer wrap"><span>황성호 <span class="footer-divider">/</span> 260199</span><span>HTML · CSS · JavaScript</span></footer>
+    <noscript><p class="noscript">계산 기능을 사용하려면 브라우저의 JavaScript를 활성화해 주세요.</p></noscript>
+</body>
+</html>
