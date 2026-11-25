@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="황성호의 자기소개 페이지">
+    <meta name="theme-color" content="#f4f6fa">
+    <title>황성호 | 자기소개</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <header class="header wrap">
+        <a class="brand" href="#top">HSH<span>.</span></a>
+        <nav aria-label="페이지 메뉴"><a href="#interests">관심 분야</a><a href="#goals">올해 목표</a><a href="../todo/index.html">To-Do</a></nav>
+        <button id="theme-toggle" class="theme-button" type="button" aria-pressed="false">☾ 다크 모드</button>
+    </header>
+    <main id="top" class="wrap">
+        <section class="hero" aria-labelledby="greeting">
+            <div class="hero-copy">
+                <p class="eyebrow">HELLO, THIS IS MY SPACE</p>
+                <h1 id="greeting" aria-label="안녕하세요, 황성호입니다."><span id="typed-greeting" aria-hidden="true">안녕하세요,<br>황성호입니다.</span><span class="cursor" aria-hidden="true">|</span></h1>
+                <p class="tagline">260199</p>
+                <a class="primary-link" href="#interests">관심 분야 살펴보기</a>
+            </div>
+            <aside class="profile-card" aria-label="황성호 프로필">
+                <div class="profile-card-top"><span>PERSONAL PROFILE</span><span aria-hidden="true">✦</span></div>
+                <div class="avatar" role="img" aria-label="웃는 얼굴 프로필 이모지">🙂</div>
+                <p class="profile-name">황성호</p><p class="profile-intro">260199</p>
+                <div class="profile-card-bottom"><span>작은 시작을 하나씩.</span><span aria-hidden="true">✳</span></div>
+            </aside>
+        </section>
+
+        <section id="interests" class="section" aria-labelledby="interests-heading">
+            <div class="section-heading"><div><p class="eyebrow">INTERESTS</p><h2 id="interests-heading">관심 분야</h2></div><p>카드를 눌러 이야기를 펼쳐보세요.</p></div>
+            <div class="interest-grid">
+                <details class="interest-card"><summary><span class="interest-icon" aria-hidden="true">⌘</span><span class="interest-label">웹 개발<small>WEB DEVELOPMENT</small></span><span class="expand-icon" aria-hidden="true">+</span></summary><div class="interest-detail"><p>HTML로 내용을 구성하고, CSS로 화면을 꾸미고, JavaScript로 동작을 만드는 분야입니다. 작은 아이디어를 직접 사용할 수 있는 웹페이지로 바꿔봅니다.</p></div></details>
+                <details class="interest-card"><summary><span class="interest-icon" aria-hidden="true">✦</span><span class="interest-label">인공지능<small>ARTIFICIAL INTELLIGENCE</small></span><span class="expand-icon" aria-hidden="true">+</span></summary><div class="interest-detail"><p>문제를 설명하는 프롬프트를 작성하고 AI가 만든 결과를 검토합니다. 답을 그대로 받아들이기보다 직접 실행하고 확인하는 과정을 배워봅니다.</p></div></details>
+                <details class="interest-card"><summary><span class="interest-icon" aria-hidden="true">♧</span><span class="interest-label">게임<small>GAMES &amp; INTERACTION</small></span><span class="expand-icon" aria-hidden="true">+</span></summary><div class="interest-detail"><p>규칙과 상호작용이 재미있는 경험을 만드는 방식을 살펴봅니다. 게임 속 작은 기능을 직접 구현하며 화면과 코드가 연결되는 과정을 탐색합니다.</p></div></details>
+            </div>
+        </section>
+
+        <section class="lower-grid section">
+            <div id="goals" class="goals-panel" aria-labelledby="goals-heading"><p class="eyebrow">SMALL STEPS, BIG CHANGES</p><h2 id="goals-heading">올해 목표</h2><p class="section-note">하나씩 이루고 체크해 보세요.</p>
+                <ul class="goal-list"><li><label><input type="checkbox" data-goal="0"><span>나만의 자기소개 웹페이지 완성하기</span></label></li><li><label><input type="checkbox" data-goal="1"><span>HTML · CSS · JavaScript 기초 익히기</span></label></li><li><label><input type="checkbox" data-goal="2"><span>직접 사용할 수 있는 To-Do 앱 만들기</span></label></li><li><label><input type="checkbox" data-goal="3"><span>Git으로 작업 과정 꾸준히 기록하기</span></label></li><li><label><input type="checkbox" data-goal="4"><span>작은 프로젝트 하나를 끝까지 완성하기</span></label></li></ul>
+            </div>
+            <div class="favorites-panel" aria-labelledby="favorites-heading"><p class="eyebrow">MY FAVORITES</p><h2 id="favorites-heading">내가 좋아하는 것 Top 5</h2><p class="section-note">실습용 예시 목록</p><ol class="favorite-list"><li><span aria-hidden="true">💻</span> 작은 웹 서비스 만들기</li><li><span aria-hidden="true">✨</span> 새로운 기술 살펴보기</li><li><span aria-hidden="true">🎮</span> 재미있는 게임 즐기기</li><li><span aria-hidden="true">📚</span> 배운 내용 기록하기</li><li><span aria-hidden="true">🌱</span> 어제보다 한 걸음 더 나아가기</li></ol></div>
+        </section>
+        <section class="contact section" aria-labelledby="contact-heading"><div><p class="eyebrow">LET'S CONNECT</p><h2 id="contact-heading">여기서 만나요.</h2></div><div class="contact-links"><span>이메일 · 등록 예정</span><a href="https://github.com/zaldo232/261125_-" target="_blank" rel="noopener noreferrer">GitHub 저장소</a></div></section>
+    </main>
+    <footer class="footer wrap"><span>황성호 · 260199</span><span>관심 분야와 목표는 실습 예시입니다.</span></footer>
+</body>
+</html>
