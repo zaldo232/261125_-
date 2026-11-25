@@ -264,7 +264,7 @@ function initializeCalculator()
         let end = input.selectionEnd === null ? value.length : input.selectionEnd;
         if (justCalculated)
         {
-            value = /^(?:[\d.(]|sqrt)/.test(text) ? "" : lastResult;
+            value = /^(?:[\d.(sS√]|sqrt)/.test(text) ? "" : lastResult;
             start = value.length;
             end = start;
         }
@@ -422,14 +422,14 @@ function initializeCalculator()
         }
         if (event.target === input)
         {
-            if (justCalculated && /^[0-9.+\-*/^()%]$/.test(event.key))
+            if (justCalculated && /^[0-9.+\-*/^()%sS√]$/.test(event.key))
             {
                 event.preventDefault();
                 insertText(event.key);
             }
             return;
         }
-        if (/^[0-9.+\-*/^()%]$/.test(event.key))
+        if (/^[0-9.+\-*/^()%sS√]$/.test(event.key))
         {
             event.preventDefault();
             insertText(event.key);
